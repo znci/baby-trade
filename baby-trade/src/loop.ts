@@ -1,3 +1,5 @@
+import { invoke } from '@tauri-apps/api/tauri'
+
 console.log(`starting game loop...`);
 
 let lastTime = 0;
@@ -191,22 +193,16 @@ function updateClock() {
     timeOfDay = "evening";
   }
 
-  // new day
-
-  console.log(`new day: ${newDay}`);
-  
   if (clockHours === 0 && clockMinutes === 0) {
     alreadyNewDay = false;
   }
   if (clockHours <= 6 && clockMinutes <= 5 * timeScale && !alreadyNewDay) {
     newDay = true;
     alreadyNewDay = true;
+    saveData();
   } else {
     newDay = false;
   }
-
-  console.log(`time of day: ${timeOfDay}`);
-  
 
   clockDate.textContent = getClockDateFormattedShort(clockMonth, clockDay);
   clockTime.textContent = getClockTimeFormatted(clockHours, clockMinutes);
@@ -416,6 +412,7 @@ function updateEvents() {
     newDaySplit.classList.add("news-splitter");
     newDaySplit.textContent = getClockDateFormattedShort(clockMonth, clockDay);
     newsBox?.appendChild(newDaySplit);
+    newsBox?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     newDay = false;
     return;
   }
@@ -435,3 +432,61 @@ function updateEvents() {
   newsBox?.appendChild(newsItem);
   newsItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
+
+// saving + loading
+
+interface SaveData {
+  balance: number;
+  babies: Array<any>;
+  clockSeconds: number;
+  clockMinutes: number;
+  clockHours: number;
+  clockDay: number;
+  clockMonth: number;
+  timeScale: number;
+  timeOfDay: string;
+  newDay: boolean;
+  alreadyNewDay: boolean;
+}
+
+setInterval(() => {
+  saveData();
+}, 60000)
+
+function saveData() {
+  invoke('save_data', {
+    data: JSON.stringify({ 
+      balance: 1000,
+      babies: [],
+      clockSeconds,
+      clockMinutes,
+      clockHours,
+      clockDay,
+      clockMonth,
+      timeScale,
+      timeOfDay,
+      newDay,
+      alreadyNewDay
+    } as SaveData)
+  })
+
+  console.log(`saved game data`);
+}
+
+invoke('load_data').then((response) => {
+  const json = JSON.parse(response as string);
+  
+  if (json) {
+    console.log(`loaded save data: ${response}`);
+
+    clockSeconds = json.clockSeconds;
+    clockMinutes = json.clockMinutes;
+    clockHours = json.clockHours;
+    clockDay = json.clockDay;
+    clockMonth = json.clockMonth;
+    timeScale = json.timeScale;
+    timeOfDay = json.timeOfDay;
+    newDay = json.newDay;
+    alreadyNewDay = json.alreadyNewDay;
+  }
+});
