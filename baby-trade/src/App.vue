@@ -8,8 +8,4 @@ import Sidebar from './components/Sidebar.vue';
     <Header />
     <Sidebar />
   </div>
-  <div class="game-ui">
-    <h1>Inventory</h1>
-
-  </div>
 </template>
