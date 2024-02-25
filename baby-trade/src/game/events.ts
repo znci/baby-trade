@@ -280,5 +280,7 @@ export function loadEventHistory() {
     newsBox?.appendChild(newsItem);
   });
 
-  newsBox?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  setTimeout(() => {
+    newsBox?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, 100);
 }
