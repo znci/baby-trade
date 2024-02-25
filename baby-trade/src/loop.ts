@@ -1,8 +1,15 @@
 import { updateClock } from "./game/clock";
-import { updateEvents } from "./game/events";
+import { loadEventHistory, updateEvents } from "./game/events";
 import { variables } from "./game/gameStore";
+import { loadData } from "./game/saving";
 
 console.log(`starting game loop...`);
+
+loadData().then((data) => {
+  console.log(`loaded game data`, data);
+  loadEventHistory();
+});
+  
 
 function gameLoop(timestamp: number) {
   variables.delta += timestamp - variables.lastTime;

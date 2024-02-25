@@ -62,7 +62,7 @@
   --font-size-xxl: 24px;
 
   --accent: #a1b988;
-  --accent-dark: #6e8b5d;
+  --accent-dark: #9ac681;
   --accent-light: #d3e3c3;
   --accent-lighter: #f4f9f0;
 
@@ -194,7 +194,6 @@ header.header .left-side, header.header .right-side {
   font-size: var(--font-size-lg);
 }
 
-/* News */
 
 .news-box {
   overflow-y: scroll;
@@ -207,6 +206,7 @@ header.header .left-side, header.header .right-side {
   align-items: center;
   margin-bottom: 10px;
   position: relative;
+  user-select: none;
 }
 
 .news-splitter::before,
@@ -239,6 +239,10 @@ header.header .left-side, header.header .right-side {
 ::-webkit-scrollbar-thumb {
   background-color: var(--accent);
   border-radius: 10px;
+}
+
+::selection {
+  background-color: var(--accent-dark);
 }
 
 

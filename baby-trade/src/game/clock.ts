@@ -1,6 +1,13 @@
 import { sharedState, variables } from "./gameStore";
 import { saveData } from "./saving";
 
+let clockDate: HTMLDivElement;
+let clockTime: HTMLDivElement;
+document.addEventListener("DOMContentLoaded", () => {
+  clockDate = document.querySelector(".js-clock-date") as HTMLDivElement;
+  clockTime = document.querySelector(".js-clock-time") as HTMLDivElement;
+}); 
+
 export function updateClock() {
   sharedState.clockMinutes += 5 * sharedState.timeScale;
   if (sharedState.clockSeconds >= 60) {
@@ -50,7 +57,6 @@ export function updateClock() {
 
   clockDate.textContent = getClockDateFormattedShort(sharedState.clockMonth, sharedState.clockDay);
   clockTime.textContent = getClockTimeFormatted(sharedState.clockHours, sharedState.clockMinutes);
-
 }
 
 
@@ -133,6 +139,3 @@ export function getClockDateFormattedShort(clockMonth: number, clockDay: number,
   }
   return `${clockDay + 1} ${monthNames[clockMonth]}`;
 }
-
-export const clockDate = document.querySelector(".js-clock-date") as HTMLDivElement;
-export const clockTime = document.querySelector(".js-clock-time") as HTMLDivElement;

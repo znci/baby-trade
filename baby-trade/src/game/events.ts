@@ -1,5 +1,8 @@
 import { getClockDateFormattedShort, getClockTimeFormatted, isNewHour } from "./clock";
 import { sharedState } from "./gameStore";
+import { saveData } from "./saving";
+
+let loaded = false;
 
 // collapse this to avoid mental damage
 let events = [
@@ -199,20 +202,10 @@ export function updateEvents() {
 
   const newDaySplit = document.createElement("div");
   
-  if (sharedState.newDay) {
-    newDaySplit.classList.add("news-splitter");
-    newDaySplit.textContent = getClockDateFormattedShort(sharedState.clockMonth, sharedState.clockDay);
-    newsBox?.appendChild(newDaySplit);
-    newsBox?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    sharedState.newDay = false;
-    return;
-  }
-
-  if(!isNewHour()) return;
-
   const randomEvent = events[Math.floor(Math.random() * events.length)];
   const newsItem = document.createElement("div");
   newsItem.classList.add("news-item");
+  
   newsItem.innerHTML = `
     <span class="news-time">[${getClockTimeFormatted(sharedState.clockHours, sharedState.clockMinutes)}]</span>
     <span class="news-content">
@@ -220,6 +213,72 @@ export function updateEvents() {
     </span>
   `;
 
-  newsBox?.appendChild(newsItem);
-  newsItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  if (sharedState.newDay) {
+    newDaySplit.classList.add("news-splitter");
+    newDaySplit.textContent = getClockDateFormattedShort(sharedState.clockMonth, sharedState.clockDay);
+    newsBox?.appendChild(newDaySplit);
+    newsBox?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    newsBox?.appendChild(newsItem);
+    newsItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    sharedState.newsList.push({
+      hour: sharedState.clockHours,
+      minute: sharedState.clockMinutes,
+      day: sharedState.clockDay,
+      month: sharedState.clockMonth,
+      time: getClockTimeFormatted(sharedState.clockHours, sharedState.clockMinutes),
+      title: randomEvent.title,
+      newDay: true
+    });
+    sharedState.newDay = false;
+
+    saveData();
+    return;
+  }
+
+  if(!isNewHour()) return;
+
+  const random = Math.floor(Math.random() * 100);
+
+  if (random < 4) {
+    newsBox?.appendChild(newsItem);
+    newsItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+    sharedState.newsList.push({
+      hour: sharedState.clockHours,
+      minute: sharedState.clockMinutes,
+      day: sharedState.clockDay,
+      month: sharedState.clockMonth,
+      time: getClockTimeFormatted(sharedState.clockHours, sharedState.clockMinutes),
+      title: randomEvent.title
+    });
+    saveData();
+  }
+}
+
+export function loadEventHistory() {
+
+  if(loaded) return;
+
+  const list = sharedState.newsList;
+  const newsBox = document.querySelector(".js-news-box");
+  
+  list.forEach((item) => {
+    const newsItem = document.createElement("div");
+    newsItem.classList.add("news-item");
+    newsItem.innerHTML = `
+      <span class="news-time">[${item.time}]</span>
+      <span class="news-content">
+        ${item.title}
+      </span>
+    `;
+    if (item.newDay) {
+      const newDaySplit = document.createElement("div");
+      newDaySplit.classList.add("news-splitter");
+      newDaySplit.textContent = getClockDateFormattedShort(item.month, item.day);
+      newsBox?.appendChild(newDaySplit);
+    }
+    newsBox?.appendChild(newsItem);
+  });
+
+  newsBox?.scrollIntoView({ behavior: 'smooth', block: 'end' });
 }

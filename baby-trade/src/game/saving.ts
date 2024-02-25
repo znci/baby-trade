@@ -13,6 +13,7 @@ interface SaveData {
   timeOfDay: string;
   newDay: boolean;
   alreadyNewDay: boolean;
+  newsList: Array<any>;
 }
 
 setInterval(() => {
@@ -32,7 +33,8 @@ export function saveData() {
       timeScale: sharedState.timeScale,
       timeOfDay: sharedState.timeOfDay,
       newDay: sharedState.newDay,
-      alreadyNewDay: sharedState.alreadyNewDay
+      alreadyNewDay: sharedState.alreadyNewDay,
+      newsList: sharedState.newsList
     } as SaveData)
   })
 
@@ -40,23 +42,23 @@ export function saveData() {
 }
 
 export function loadData() {
-  invoke('load_data').then((response) => {
-    const json = JSON.parse(response as string);
-    
-    if (json) {
-      console.log(`loaded save data: ${response}`);
-  
-      sharedState.balance = json.balance;
-      sharedState.babies = json.babies;
-      sharedState.clockSeconds = json.clockSeconds;
-      sharedState.clockMinutes = json.clockMinutes;
-      sharedState.clockHours = json.clockHours;
-      sharedState.clockDay = json.clockDay;
-      sharedState.clockMonth = json.clockMonth;
-      sharedState.timeScale = json.timeScale;
-      sharedState.timeOfDay = json.timeOfDay;
-      sharedState.newDay = json.newDay;
-      sharedState.alreadyNewDay = json.alreadyNewDay;
-    }
-  });
+  return new Promise((resolve, reject) => {
+    invoke('load_data', {}).then((data: any) => {
+      const parsedData = JSON.parse(data)
+      sharedState.balance = parsedData.balance;
+      sharedState.babies = parsedData.babies;
+      sharedState.clockSeconds = parsedData.clockSeconds;
+      sharedState.clockMinutes = parsedData.clockMinutes;
+      sharedState.clockHours = parsedData.clockHours;
+      sharedState.clockDay = parsedData.clockDay;
+      sharedState.clockMonth = parsedData.clockMonth;
+      sharedState.timeScale = parsedData.timeScale;
+      sharedState.timeOfDay = parsedData.timeOfDay;
+      sharedState.newDay = parsedData.newDay;
+      sharedState.alreadyNewDay = parsedData.alreadyNewDay;
+      sharedState.newsList = parsedData.newsList;
+      console.log(`loaded game data`);
+      resolve(sharedState);
+    })
+  })
 }

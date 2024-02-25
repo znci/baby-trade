@@ -27,6 +27,16 @@ let alreadyNewDay = false;
 
 let monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
+interface NewsItem {
+  time: string;
+  hour: number;
+  minute: number;
+  day: number;
+  month: number;
+  title: string;
+  newDay?: boolean;
+}
+
 export let sharedState = {
   balance: 1000,
   babies: [],
@@ -38,7 +48,8 @@ export let sharedState = {
   timeScale,
   timeOfDay,
   newDay,
-  alreadyNewDay
+  alreadyNewDay,
+  newsList: [] as NewsItem[],
 };
 
 export let variables = {
