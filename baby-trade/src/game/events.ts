@@ -1,6 +1,8 @@
+import { playNewsSound } from "./audio";
 import { getClockDateFormattedShort, getClockTimeFormatted, isNewHour } from "./clock";
 import { sharedState } from "./gameStore";
 import { saveData } from "./saving";
+
 
 let loaded = false;
 
@@ -197,6 +199,14 @@ let events = [
   }
 ]
 
+function formatNewsEntry(event: any) {
+  return `
+    <span class="news-time">[${getClockTimeFormatted(sharedState.clockHours, sharedState.clockMinutes)}]</span>
+    <span class="news-content">
+      ${event.title}
+    </span>
+  `;
+}
 export function updateEvents() {
   const newsBox = document.querySelector(".js-news-box");
 
@@ -206,14 +216,11 @@ export function updateEvents() {
   const newsItem = document.createElement("div");
   newsItem.classList.add("news-item");
   
-  newsItem.innerHTML = `
-    <span class="news-time">[${getClockTimeFormatted(sharedState.clockHours, sharedState.clockMinutes)}]</span>
-    <span class="news-content">
-      ${randomEvent.title}
-    </span>
-  `;
+  newsItem.innerHTML = formatNewsEntry(randomEvent);
 
+  // Make a new news event every in-game day, no matter what
   if (sharedState.newDay) {
+    playNewsSound();
     newDaySplit.classList.add("news-splitter");
     newDaySplit.textContent = getClockDateFormattedShort(sharedState.clockMonth, sharedState.clockDay);
     newsBox?.appendChild(newDaySplit);
@@ -239,7 +246,9 @@ export function updateEvents() {
 
   const random = Math.floor(Math.random() * 100);
 
+  // 4% chance of a news event happening every in-game hour
   if (random < 4) {
+    playNewsSound();
     newsBox?.appendChild(newsItem);
     newsItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
 

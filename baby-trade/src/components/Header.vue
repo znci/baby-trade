@@ -24,7 +24,7 @@
       <div class="container symmetrical justify-center align-center">
         <div class="container-content">
           <div class="container-icon">
-            cool icon here
+            <img src="/src/assets/sprites/clock/night.png" alt="">
           </div>
           <div class="center js-clock-date">
             12 Aug
