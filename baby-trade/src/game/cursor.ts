@@ -10,7 +10,8 @@ interface Cursors {
 }
 
 let cursors: Cursors = {
-  "default": "/src/assets/cursor.png"
+  "default": "/src/assets/cursor.png",
+  "pointer": "/src/assets/cursor_pointer.png"
 };
 
 function setCursor(cursorType: string) {
@@ -38,3 +39,26 @@ document.addEventListener("mousedown", () => {
 document.addEventListener("mouseup", () => {
   cursorClicked = false;
 });
+
+document.onload = () => {
+  document.querySelectorAll("a").forEach((el) => {
+    el.addEventListener("mouseover", () => {
+      setCursor("pointer");
+    });
+    el.addEventListener("mouseout", () => {
+      setCursor("default");
+    });
+  });
+}
+
+// check for new elements
+setInterval(() => {
+  document.querySelectorAll("a").forEach((el) => {
+    el.addEventListener("mouseover", () => {
+      setCursor("pointer");
+    });
+    el.addEventListener("mouseout", () => {
+      setCursor("default");
+    });
+  });
+}, 1000);

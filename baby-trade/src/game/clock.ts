@@ -3,10 +3,14 @@ import { saveData } from "./saving";
 
 let clockDate: HTMLDivElement;
 let clockTime: HTMLDivElement;
+let clockImage: HTMLImageElement;
 document.addEventListener("DOMContentLoaded", () => {
   clockDate = document.querySelector(".js-clock-date") as HTMLDivElement;
   clockTime = document.querySelector(".js-clock-time") as HTMLDivElement;
+  clockImage = document.querySelector(".js-clock-image") as HTMLImageElement;
 }); 
+
+const clockAssets = "/src/assets/sprites/clock";
 
 export function updateClock() {
   sharedState.clockMinutes += 5 * sharedState.timeScale;
@@ -37,8 +41,10 @@ export function updateClock() {
   // time of day
   if (sharedState.clockHours >= 6 && sharedState.clockHours < 18) {
     sharedState.timeOfDay = "day";
+    clockImage.src = `${clockAssets}/day.png`;
   } else {
     sharedState.timeOfDay = "night";
+    clockImage.src = `${clockAssets}/night.png`;
   }
   if (sharedState.clockHours >= 18 && sharedState.clockHours < 20) {
     sharedState.timeOfDay = "evening";

@@ -3,6 +3,8 @@ import { loadEventHistory, updateEvents } from "./game/events";
 import { variables } from "./game/gameStore";
 import { loadData } from "./game/saving";
 
+let timeScale = 1;
+
 console.log(`starting game loop...`);
 
 loadData().then((data) => {
@@ -10,9 +12,8 @@ loadData().then((data) => {
   loadEventHistory();
 });
   
-
 function gameLoop(timestamp: number) {
-  variables.delta += timestamp - variables.lastTime;
+  variables.delta += (timestamp - variables.lastTime) * timeScale; // Multiply by timeScale
   variables.lastTime = timestamp;
 
   while (variables.delta >= 1000 / variables.ticksPerSecond) {
@@ -30,7 +31,7 @@ function gameLoop(timestamp: number) {
 
   // console.log(`tick: ${tick}, fps: ${fps}`);
 
-  if (timestamp - variables.lastUpdate >= 1000) {
+  if (timestamp - variables.lastUpdate >= 1000 * timeScale) { // Multiply by timeScale
     update();
     variables.lastUpdate = timestamp;
   }

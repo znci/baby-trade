@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import Clock from './header/Clock.vue';
+import News from './header/News.vue';
+</script>
+
 <template>
   <header class="header">
     <div class="left-side">
@@ -13,25 +18,8 @@
       </div>
     </div>
     <div class="right-side">
-      <div class="container small-padding large">
-        <div class="container-content news-box fixed">
-          <div class="container-title">
-            Recent News
-          </div>
-          <div class="small js-news-box"></div>
-        </div>
-      </div>
-      <div class="container symmetrical justify-center align-center">
-        <div class="container-content">
-          <div class="container-icon">
-            <img src="/src/assets/sprites/clock/night.png" alt="">
-          </div>
-          <div class="center js-clock-date">
-            12 Aug
-          </div>
-          <div class="center small js-clock-time">17:30</div>
-        </div>
-      </div>
+      <News />
+      <Clock />
     </div>
   </header>
 </template>
