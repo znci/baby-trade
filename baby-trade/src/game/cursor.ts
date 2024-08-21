@@ -15,6 +15,9 @@ let cursors: Cursors = {
 };
 
 function setCursor(cursorType: string) {
+  if(cursorType === "pointer") {
+    cursor.style.left = "-100px";
+  }
   cursor.style.backgroundImage = `url(${cursors[cursorType]})`;
 }
 
