@@ -293,105 +293,166 @@ export const DescriptionSnippets: DescriptionSnippets = {
   ],
 }
 
-function randomBaby() {
-
-  //* Choose a random name
-  const randomBaby = Babies[Math.floor(Math.random() * Babies.length)];
-
-  //* Choose a random rarity
-  const rarity = Math.random();
-  let rarityType: Rarity = "COMMON";
-  if (rarity < Chances.RARE) {
-    rarityType = "RARE";
-  } if (rarity < Chances.PRISTINE) {
-    rarityType = "PRISTINE";
-  }
-
-  //* Choose 3 random attributes
-  const randomAttributes = Attributes.sort(() => Math.random() - 0.5).slice(0, 3);
-
-  //* Choose 3 random preferred nicknames (only if there is more than 3 nicknames)
-  let preferredNicknames: string[] = [];
-  if (randomBaby.nicknames.length > 3) {
-    preferredNicknames = randomBaby.nicknames.sort(() => Math.random() - 0.5).slice(0, 3);
-  } else {
-    preferredNicknames = randomBaby.nicknames;
-  }
-
-  const genderOperator = randomBaby.gender === "male";
-  const genderSelectors = {
-    "s/he": genderOperator ? "he" : "she",
-    "him/her": genderOperator ? "him" : "her",
-    "his/her": genderOperator ? "his" : "her",
-    "his/hers": genderOperator ? "his" : "hers",
-  }
-
-  //* time to generate the description!!!
-  let description = "";
-
-  //* Use the randomAttributes to select 1 random description snippet
-  const totalSnippets = randomAttributes.length;
-  let snippetsSoFar: { [key: string]: DescriptionSnippet } = {};
-
-  let snippetIndex = 0;
-  const snippets = randomAttributes.map((attribute) => {
-    const snippet = DescriptionSnippets[attribute as Attributes];
-    const currentSnippet = snippet[Math.floor(Math.random() * snippet.length)];
-
-    snippetsSoFar[attribute] = currentSnippet;
-
-    let snippetText = currentSnippet.text;
-    
-    snippetIndex++;
-    return snippetText;
-  });
-
-  //* Join the snippets together
-  description = snippets.join(" ");
-
-  const inDemandNumber = Math.random();
-  const inDemandChance = (inDemandNumber / Bonuses[rarityType]);
-
-  // Create stats (personality, social ability, intelligence, early learning score) based on score
-  // Score is based on rarity, in demand, and attributes and randomness
-
-  let score = ((Math.floor(Math.random() * 100) + 1) / 100) * Bonuses[rarityType] / inDemandChance;
-  const personalityScore = Math.floor((Math.random() * 100) + 1 * score);
-  const socialAbilityScore = Math.floor((Math.random() * 75) + 1 * score);
-  const intelligenceScore = Math.floor((Math.random() * 100) + 1 * score);
-  const earlyLearningScore = Math.floor((Math.random() * 100) + 1 * score);
-
-  console.log(`Score: `, score);
-  console.log(`Personality: `, personalityScore);
-  console.log(`Social Ability: `, socialAbilityScore);
-  console.log(`Intelligence: `, intelligenceScore);
-  console.log(`Early Learning Score: `, earlyLearningScore);
-
-  let babyInfo: BabyInfo = {
-    name: randomBaby.name,
-    rarity: rarityType,
-    rarityBonus: Bonuses[rarityType],
-    description: description,
-    nicknames: randomBaby.nicknames,
-    preferredNicknames: preferredNicknames,
-    preferredNickname: preferredNicknames[0],
-    stats: {
-      score: score,
-      personality: personalityScore,
-      socialAbility: socialAbilityScore,
-      intelligence: intelligenceScore,
-      earlyLearningScore: earlyLearningScore,
-    },
-    inDemand: inDemandChance < Chances.IN_DEMAND,
-    inDemandChance: inDemandChance,
-
-    gender: randomBaby.gender,
-    genderSelectors: genderSelectors,
-  }
-
-  console.log(`Baby Info: `, babyInfo);
-
-  newBabyMenu(babyInfo);
+// generate a random number at a specific length
+function randomNumber(length: number): number {
+  return Math.floor(Math.random() * Math.pow(10, length));
 }
 
+function randomBaby(code: string = "") {
+  
+  let babyInfo: Partial<BabyInfo> = {};
+  if (code !== "") {
+    // convert from base64
+    code = atob(code);
+    // convert from string
+    let newCode = JSON.parse(code) as BabyInfo;
+
+    console.log(`Baby Code: `, code);
+
+    babyInfo = {
+      name: newCode.name,
+      rarity: newCode.rarity,
+      rarityBonus: newCode.rarityBonus,
+      description: newCode.description,
+      nicknames: [],
+      preferredNicknames: [],
+      preferredNickname: "",
+      stats: newCode.stats,
+      inDemand: newCode.inDemand,
+      inDemandChance: newCode.inDemandChance,
+
+      gender: newCode.gender,
+      genderSelectors: newCode.genderSelectors,
+    }
+  } else {
+    let babyFloat = randomNumber(16);
+
+    // split the float every 2 digits
+    const babyFloatArray: any = babyFloat.toString().match(/.{1,2}/g);
+
+    babyFloatArray.forEach((element: any, index: number) => {
+      babyFloatArray[index] = parseInt(element);
+    });
+
+    console.log(`Baby Float: `, babyFloat, babyFloatArray);
+    
+    //* Choose a random name
+    const randomBaby = Babies[Math.floor(Math.random() * Babies.length)];
+
+    //* Choose a random rarity
+    const rarity = Math.random();
+    let rarityType: Rarity = "COMMON";
+    if (rarity < Chances.RARE) {
+      rarityType = "RARE";
+    } if (rarity < Chances.PRISTINE) {
+      rarityType = "PRISTINE";
+    }
+
+    //* Choose 3 random attributes
+    const randomAttributes = Attributes.sort(() => Math.random() - 0.5).slice(0, 3);
+
+    //* Choose 3 random preferred nicknames (only if there is more than 3 nicknames)
+    let preferredNicknames: string[] = [];
+    if (randomBaby.nicknames.length > 3) {
+      preferredNicknames = randomBaby.nicknames.sort(() => Math.random() - 0.5).slice(0, 3);
+    } else {
+      preferredNicknames = randomBaby.nicknames;
+    }
+
+    const genderOperator = randomBaby.gender === "male";
+    const genderSelectors = {
+      "s/he": genderOperator ? "he" : "she",
+      "him/her": genderOperator ? "him" : "her",
+      "his/her": genderOperator ? "his" : "her",
+      "his/hers": genderOperator ? "his" : "hers",
+    }
+
+    //* time to generate the description!!!
+    let description = "";
+
+    //* Use the randomAttributes to select 1 random description snippet
+    let snippetsSoFar: { [key: string]: DescriptionSnippet } = {};
+
+    let snippetIndex = 0;
+    const snippets = randomAttributes.map((attribute) => {
+      const snippet = DescriptionSnippets[attribute as Attributes];
+      const currentSnippet = snippet[Math.floor(Math.random() * snippet.length)];
+
+      snippetsSoFar[attribute] = currentSnippet;
+
+      let snippetText = currentSnippet.text;
+      
+      snippetIndex++;
+      return snippetText;
+    });
+
+    //* Join the snippets together
+    description = snippets.join(" ");
+
+    const inDemandNumber = babyFloatArray[1] + babyFloatArray[2] + babyFloatArray[3] + babyFloatArray[4];
+    const inDemandChance = (inDemandNumber / Bonuses[rarityType]);
+
+    // Create stats (personality, social ability, intelligence, early learning score) based on score
+    // Score is based on rarity, in demand, and attributes and randomness
+
+    let score = ((babyFloatArray[0]) / 100) * Bonuses[rarityType] / inDemandChance;
+    const personalityScore = Math.floor(babyFloatArray[1] + 1 * score);
+    const socialAbilityScore = Math.floor(babyFloatArray[2] + 1 * score);
+    const intelligenceScore = Math.floor(babyFloatArray[3] + 1 * score);
+    const earlyLearningScore = Math.floor(babyFloatArray[4] + 1 * score);
+
+    console.log(`Score: `, score);
+    console.log(`Personality: `, personalityScore);
+    console.log(`Social Ability: `, socialAbilityScore);
+    console.log(`Intelligence: `, intelligenceScore);
+    console.log(`Early Learning Score: `, earlyLearningScore);
+    babyInfo = {
+      name: randomBaby.name,
+      rarity: rarityType,
+      rarityBonus: Bonuses[rarityType],
+      description: description,
+      nicknames: randomBaby.nicknames,
+      preferredNicknames: preferredNicknames,
+      preferredNickname: preferredNicknames[0],
+      stats: {
+        score: score,
+        personality: personalityScore,
+        socialAbility: socialAbilityScore,
+        intelligence: intelligenceScore,
+        earlyLearningScore: earlyLearningScore,
+      },
+      inDemand: inDemandChance < Chances.IN_DEMAND,
+      inDemandChance: inDemandChance,
+  
+      gender: randomBaby.gender,
+      genderSelectors: genderSelectors,
+    }
+  }
+  
+  let babyCode = {
+    name: babyInfo.name,
+    rarity: babyInfo.rarity,
+    rarityBonus: babyInfo.rarityBonus,
+    description: babyInfo.description,
+    preferredNickname: babyInfo.preferredNickname,
+    stats: babyInfo.stats,
+    inDemand: babyInfo.inDemand,
+    inDemandChance: babyInfo.inDemandChance,
+
+    gender: babyInfo.gender,
+    genderSelectors: babyInfo.genderSelectors,
+  };
+
+  let babyCodeString = JSON.stringify(babyCode);
+  // convert to base64
+  babyCodeString = btoa(babyCodeString);
+
+  console.log(`Baby Info: `, babyInfo);
+  console.log(`Baby Code: `, babyCodeString);
+
+  newBabyMenu(babyInfo as BabyInfo);
+}
+
+// randomBaby("eyJuYW1lIjoiR2FicmllbCIsInJhcml0eSI6IkNPTU1PTiIsInJhcml0eUJvbnVzIjoxLCJkZXNjcmlwdGlvbiI6Int7IGNhcGl0YWxHZW5kZXJTZWxlY3RvcnNbJ3MvaGUnXSB9fSdzIHNtYXJ0LCBidXQgY2FuIGJlIGEgYml0IG9mIGEga25vdy1pdC1hbGwhIHt7IGNhcGl0YWxHZW5kZXJTZWxlY3RvcnNbJ3MvaGUnXSB9fSdzIGFsd2F5cyByaWdodCEge3sgY2FwaXRhbEdlbmRlclNlbGVjdG9yc1sncy9oZSddIH19IGlzIGN1dGUsIGJ1dCBjYW4gYmUgdHJvdWJsZSEge3sgcHJlZmVycmVkTmlja25hbWUgfX0gaXMgYSByZWFsIHNvY2lhbCBidXR0ZXJmbHkhIiwicHJlZmVycmVkTmlja25hbWUiOiJHYWJlIiwic3RhdHMiOnsic2NvcmUiOjAuMDAxMTU4OTQwMzk3MzUwOTkzMywicGVyc29uYWxpdHkiOjYwLCJzb2NpYWxBYmlsaXR5Ijo4MiwiaW50ZWxsaWdlbmNlIjo4MiwiZWFybHlMZWFybmluZ1Njb3JlIjo3OH0sImluRGVtYW5kIjpmYWxzZSwiaW5EZW1hbmRDaGFuY2UiOjMwMn0=");
 randomBaby();
+// randomBaby("eyJuYW1lIjoiQ2hhcmxpZSIsInJhcml0eSI6IkNPTU1PTiIsInJhcml0eUJvbnVzIjoxLCJkZXNjcmlwdGlvbiI6Int7IGNhcGl0YWxHZW5kZXJTZWxlY3RvcnNbJ3MvaGUnXSB9fSdzIGlzIGEgcmVhbCBjdXRpZSwgYnV0IGNhbiBiZSBhIGJpdCBvZiBhIGhhbmRmdWwgYXQgdGltZXMhIHt7IHByZWZlcnJlZE5pY2tuYW1lIH19IGlzIGEgcmVhbCBzbWFydCBjb29raWUhIHt7IHByZWZlcnJlZE5pY2tuYW1lIH19IGlzIGEgc3RpbmtlciEiLCJwcmVmZXJyZWROaWNrbmFtZSI6IkNoYXJsaWUiLCJzdGF0cyI6eyJzY29yZSI6MC4wMDY0LCJwZXJzb25hbGl0eSI6Nywic29jaWFsQWJpbGl0eSI6MywiaW50ZWxsaWdlbmNlIjo2OCwiZWFybHlMZWFybmluZ1Njb3JlIjo0N30sImluRGVtYW5kIjpmYWxzZSwiaW5EZW1hbmRDaGFuY2UiOjEyNSwiZ2VuZGVyIjoibWFsZSIsImdlbmRlclNlbGVjdG9ycyI6eyJzL2hlIjoiaGUiLCJoaW0vaGVyIjoiaGltIiwiaGlzL2hlciI6ImhpcyIsImhpcy9oZXJzIjoiaGlzIn19")
