@@ -118,6 +118,10 @@ body {
   --tag-common: hsl(0, 0%, 60%);
   --tag-rare: hsl(36, 100%, 50%);
   --tag-pristine: hsl(240, 100%, 82%);
+
+  /* gender colors (VERY STEREOTYPICAL) */
+  --male-color: #6799f3;
+  --female-color: #ff6a66;
 }
 
 body {
@@ -568,6 +572,15 @@ body .baby-menu.rarity-pristine {
 }
 .tag.pristine, .tag.blue {
   background-color: var(--tag-pristine);
+  color: #fff;
+}
+
+.tag.male {
+  background-color: var(--male-color);
+  color: #fff;
+}
+.tag.female {
+  background-color: var(--female-color);
   color: #fff;
 }
 
